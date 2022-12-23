@@ -1,25 +1,46 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Button, Container, Grid } from "@mui/material";
+import React, { useState } from "react";
+import "./App.css";
+import AddUser from "./components/AddUser";
+import UserTable from "./components/UserTable";
+import { IUser } from "./types/user";
 
 function App() {
+  // eslint-disable-next-line no-unused-vars
+  const [users, setUsers] = useState<IUser[]>([
+    {
+      id: 1,
+      name: "rouzbeh",
+      age: 27,
+      email: "roozbeh.hatamy@gmail.com",
+      newsletter: "monthly",
+    },
+  ]);
+
+  const [openModal, setOpenModal] = useState(false);
+
+  const handleCloseModal = () => setOpenModal(false);
+
+  const handleAddUser = (user: IUser) => {
+    setUsers((prev) => [...prev, user]);
+  };
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Container maxWidth="lg">
+      <Grid container p={10}>
+        <Grid item xs={12} display="flex" justifyContent="flex-end" py={2}>
+          <Button variant="contained" color="primary">
+            <AddUser
+              handleClose={handleCloseModal}
+              open={openModal}
+              addUser={handleAddUser}
+            />
+          </Button>
+        </Grid>
+        <Grid item xs={12}>
+          <UserTable users={users} />
+        </Grid>
+      </Grid>
+    </Container>
   );
 }
 
