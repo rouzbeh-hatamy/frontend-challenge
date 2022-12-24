@@ -20,6 +20,7 @@ function App() {
   const [openModal, setOpenModal] = useState(false);
 
   const handleCloseModal = () => setOpenModal(false);
+  const handleOpenModal = () => setOpenModal(true);
 
   const handleAddUser = (user: IUser) => {
     setUsers((prev) => [...prev, user]);
@@ -28,18 +29,20 @@ function App() {
     <Container maxWidth="lg">
       <Grid container p={10}>
         <Grid item xs={12} display="flex" justifyContent="flex-end" py={2}>
-          <Button variant="contained" color="primary">
-            <AddUser
-              handleClose={handleCloseModal}
-              open={openModal}
-              addUser={handleAddUser}
-            />
+          <Button variant="contained" color="primary" onClick={handleOpenModal}>
+            Add User
           </Button>
         </Grid>
         <Grid item xs={12}>
           <UserTable users={users} />
         </Grid>
       </Grid>
+      <AddUser
+        handleClose={handleCloseModal}
+        open={openModal}
+        addUser={handleAddUser}
+        newId={users.length + 1}
+      />
     </Container>
   );
 }
