@@ -1,5 +1,5 @@
 # challenge on Github pages
-[link](git+https://github.com/sheypoor/frontend-challenge.git)
+[link](https://rouzbeh-hatamy.github.io/frontend-challenge/)
 # Sheypoor frontend-challenge
 
 The task is to implement a **2 step UI wizard** to create a user account. There is no UX or UI constraints, this is 
