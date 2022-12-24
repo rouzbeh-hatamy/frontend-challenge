@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import {
   Button,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -16,7 +17,7 @@ import {
 } from "@mui/material";
 import { Box } from "@mui/system";
 import React, { useEffect, useState } from "react";
-import { validateEmail } from "../../sdk/api";
+import { createUser, validateEmail } from "../../sdk/api";
 import { IUser } from "../../types/user";
 
 interface IAddUser {
@@ -30,6 +31,7 @@ const steps = ["Personal Information", "Contact Information"];
 
 function AddUser({ handleClose, open, addUser, newId }: IAddUser) {
   const [activeStep, setActiveStep] = useState<number>(0);
+  const [loading, setLoading] = useState(false);
   const [info, setInfo] = useState<IUser>({
     id: newId,
     name: "",
@@ -70,7 +72,7 @@ function AddUser({ handleClose, open, addUser, newId }: IAddUser) {
       return false;
     }
 
-    if (!info.email || validateEmail(info.email) === false) {
+    if (!info.email || validateEmail(info.email) === false || loading) {
       return true;
     }
     return false;
@@ -80,7 +82,11 @@ function AddUser({ handleClose, open, addUser, newId }: IAddUser) {
     if (activeStep === 0) {
       setActiveStep(1);
     } else {
-      console.log("submit");
+      setLoading(true);
+      createUser(info).then(() => {
+        setLoading(false);
+        addUser(info);
+      });
     }
   };
 
@@ -91,6 +97,22 @@ function AddUser({ handleClose, open, addUser, newId }: IAddUser) {
       setActiveStep(0);
     }
   };
+
+  useEffect(() => {
+    setActiveStep(0);
+    setInfo({
+      id: newId,
+      name: "",
+      email: "",
+      age: 0,
+      newsletter: "daily",
+    });
+    setInputValidator({
+      name: true,
+      age: true,
+      email: true,
+    });
+  }, [open]);
 
   return (
     <Dialog onClose={handleClose} open={open} maxWidth="md" fullWidth>
@@ -108,7 +130,12 @@ function AddUser({ handleClose, open, addUser, newId }: IAddUser) {
       </DialogTitle>
       <DialogContent>
         {activeStep === 0 ? (
-          <Box p={3} display="flex" justifyContent="space-between">
+          <Box
+            p={3}
+            display="flex"
+            justifyContent="space-between"
+            flexDirection={{ xs: "column", md: "row" }}
+          >
             <TextField
               value={info.name}
               label="Full Name"
@@ -116,6 +143,7 @@ function AddUser({ handleClose, open, addUser, newId }: IAddUser) {
               variant="outlined"
               color={inputValidator.name ? "info" : "error"}
               onChange={handleChange}
+              sx={{ marginY: "15px" }}
             />
             <TextField
               value={info.age}
@@ -125,10 +153,16 @@ function AddUser({ handleClose, open, addUser, newId }: IAddUser) {
               color={inputValidator.age ? "info" : "error"}
               type="number"
               onChange={handleChange}
+              sx={{ marginY: "15px" }}
             />
           </Box>
         ) : (
-          <Box p={3} display="flex" justifyContent="space-between">
+          <Box
+            p={3}
+            display="flex"
+            justifyContent="space-between"
+            flexDirection={{ xs: "column", md: "row" }}
+          >
             <TextField
               value={info.email}
               label="Email"
@@ -136,8 +170,9 @@ function AddUser({ handleClose, open, addUser, newId }: IAddUser) {
               variant="outlined"
               color={inputValidator.name ? "info" : "error"}
               onChange={handleChange}
+              sx={{ marginY: "15px" }}
             />
-            <FormControl sx={{ width: "230px" }}>
+            <FormControl sx={{ width: "230px", marginY: "15px" }}>
               <InputLabel id="select">Newsletter</InputLabel>
               <Select
                 labelId="select"
@@ -153,7 +188,7 @@ function AddUser({ handleClose, open, addUser, newId }: IAddUser) {
           </Box>
         )}
       </DialogContent>
-      <DialogActions>
+      <DialogActions sx={{ padding: "15px" }}>
         <Button variant="outlined" onClick={handleBack}>
           {activeStep === 0 ? "Close" : "back"}
         </Button>
@@ -162,7 +197,13 @@ function AddUser({ handleClose, open, addUser, newId }: IAddUser) {
           disabled={disabledButton()}
           onClick={handleNext}
         >
-          {activeStep === 0 ? "Next" : "submit"}
+          {activeStep === 0 ? (
+            "Next"
+          ) : loading ? (
+            <CircularProgress size="22px" sx={{ paddingX: "15px" }} />
+          ) : (
+            "submit"
+          )}
         </Button>
       </DialogActions>
     </Dialog>

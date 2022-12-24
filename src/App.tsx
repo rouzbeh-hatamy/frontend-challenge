@@ -23,11 +23,12 @@ function App() {
   const handleOpenModal = () => setOpenModal(true);
 
   const handleAddUser = (user: IUser) => {
+    setOpenModal(false);
     setUsers((prev) => [...prev, user]);
   };
   return (
     <Container maxWidth="lg">
-      <Grid container p={10}>
+      <Grid container p={{ xs: 0, md: 10 }}>
         <Grid item xs={12} display="flex" justifyContent="flex-end" py={2}>
           <Button variant="contained" color="primary" onClick={handleOpenModal}>
             Add User
